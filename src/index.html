@@ -1,13 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tomasulo</title>
+    <link rel="stylesheet" href="../scss/main.scss">
 </head>
+
 <body>
-    <h1>Hello World</h1>
+    <main class="bg-secondary">
+        <section class="menu menu-visible bg-dark text-white">
+            <div class="container-fluid mt-1 text-center">
+                <h3 class="text-center">Tomasulo</h3>
+            </div>
+        </section>
+        <section class="it">
+            <button class="menu-button btn btn-dark">
+                <i class="bi bi-list"></i>
+            </button>
+        </section>
+    </main>
+    <script>
+        const menu = document.querySelector(".menu");
+        const menuBtn = document.querySelector(".menu-button")
+
+        menuBtn.onclick = () => {
+            menu.classList.toggle("menu-visible");
+            menu.classList.toggle("menu-hidden");
+        }
+    </script>
     <script type="module" src="index.js"></script>
 </body>
+
 </html>

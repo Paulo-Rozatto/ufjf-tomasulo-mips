@@ -1,0 +1,42 @@
+@import "bootstrap/scss/bootstrap";
+@import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+
+$sidebar-width: 300px;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    display: flex;
+    flex: 0 0 100%;
+    height: 100vh;
+}
+
+.menu {
+    width: $sidebar-width;
+    will-change: transform;
+    transform: translate(-$sidebar-width, 0);
+    transition: transform 200ms;
+}
+
+.menu-visible {
+    transition: transform 200ms;
+    transform: translate(0, 0);
+}
+
+.menu-hidden {
+    position: absolute;
+    height: 100%;
+}
+
+.menu-button {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+.it {
+    flex-grow: 1;
+}
