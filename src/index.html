@@ -42,9 +42,9 @@
         <section class="it">
             <div class="container-fluid h-100">
                 <section id="instructions" class="row h-25">
-                    <div class="col-sm-12 col-lg-4 order-lg-2 text-center h-100">
+                    <div class="col-sm-12 col-lg-4 order-lg-2 h-100">
                         <h5 class="mx-auto text-white">Instruções</h5>
-                        <ul id="instructions-list" class="list-group w-75 h-75" style="margin: auto; overflow: auto;">
+                        <ul id="instructions-list" class="list-group w-75 h-75" style="overflow: auto;">
                             <li class="list-group-item active">00000000000000000000000000000000</li>
                             <li class="list-group-item">00000000000000000000000000000000</li>
                             <li class="list-group-item">00000000000000000000000000000000</li>
@@ -55,7 +55,74 @@
                     <div class="col-sm-12 col-lg-4 order-lg-1">PC</div>
                     <div class="col-sm-12 col-lg-4 order-lg-3"></div>
                 </section>
-                <section id="registers" class="row">
+                <section id="registers" class="row h-25">
+                    <div class="col-sm-12 col-lg-4 order-lg-1 h-100">
+                        <h5 class="mx-auto text-white">Store buffer</h5>
+                        <ul id="store-buffer" class="list-group w-75 h-75" style="overflow: auto;">
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-12 col-lg-4 order-lg-2">
+                        <h5 class="mx-auto text-white">Load buffer</h5>
+                        <ul id="load-buffer" class="list-group w-75 h-75" style="overflow: auto;">
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">0x00</strong>
+                                <span class="float-end">00</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-12 col-lg-4 order-lg-3 h-100">
+                        <h5 class="mx-auto text-white">Registradores</h5>
+                        <ul id="registers" class="list-group w-100 h-75" style="margin: auto; overflow: auto;">
+                            <li class="list-group-item" id="f0">
+                                <strong class="float-start">f0</strong>
+                                <span class="float-end">00000000000000000000000000000000</span>
+                            </li>
+                            <li class="list-group-item" id="f1">
+                                <strong class="float-start">f1</strong>
+                                <span class="float-end">00000000000000000000000000000000</span>
+                            </li>
+                            <li class="list-group-item" id="f2">
+                                <strong class="float-start">f2</strong>
+                                <span class="float-end">00000000000000000000000000000000</span>
+                            </li>
+                            <li class="list-group-item" id="f3">
+                                <strong class="float-start">f3</strong>
+                                <span class="float-end">00000000000000000000000000000000</span>
+                            </li>
+                            <li class="list-group-item" id="f4">
+                                <strong class="float-start">f4</strong>
+                                <span class="float-end">00000000000000000000000000000000</span>
+                            </li>
+                        </ul>
+                    </div>
                 </section>
                 <section id="rstations" class="row"></section>
 
@@ -186,7 +253,7 @@
             const commands = code.split('\n');
             const instructions = document.querySelector("#instructions-list");
             instructions.innerText = "";
-            
+
             const fragment = document.createDocumentFragment();
             for (const command of commands) {
                 const li = document.createElement("li");
