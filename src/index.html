@@ -17,11 +17,12 @@
                 <h3 class="text-center">Tomasulo</h3>
             </div>
             <div class="container-fluid btn-group mt-4 mb-4">
-                <button class="btn btn-secondary stop" title="Reset"><i
+                <button id="reset" class="btn btn-secondary stop" title="Reset"><i
                         class="bi bi-arrow-counterclockwise"></i></i></button>
-                <button class="btn btn-secondary" title="Rodar"><i class="bi bi-play"></i></button>
-                <button class="btn btn-secondary" title="Pausar"><i class="bi bi-pause"></i></button>
-                <button class="btn btn-secondary" title="Próximo"><i class="bi bi-fast-forward"></i></button>
+                <button id="run" class="btn btn-secondary" title="Rodar"><i class="bi bi-play"></i></button>
+                <button id="pause" class="btn btn-secondary" title="Pausar"><i class="bi bi-pause"></i></button>
+                <button id="foward" class="btn btn-secondary" title="Próximo"><i
+                        class="bi bi-fast-forward"></i></button>
             </div>
             <div class="container-fluid input-group mt-4 mb-3 input">
                 <button class="btn btn-secondary w-100" title="Carregar código" data-bs-toggle="modal"
@@ -39,6 +40,27 @@
             </div>
         </section>
         <section class="it">
+            <div class="container-fluid h-100">
+                <section id="instructions" class="row h-25">
+                    <div class="col-sm-12 col-lg-4 order-lg-2 text-center h-100">
+                        <h5 class="mx-auto text-white">Instruções</h5>
+                        <ul id="instructions-list" class="list-group w-75 h-75" style="margin: auto; overflow: auto;">
+                            <li class="list-group-item active">00000000000000000000000000000000</li>
+                            <li class="list-group-item">00000000000000000000000000000000</li>
+                            <li class="list-group-item">00000000000000000000000000000000</li>
+                            <li class="list-group-item">00000000000000000000000000000000</li>
+                            <li class="list-group-item">00000000000000000000000000000000</li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-12 col-lg-4 order-lg-1">PC</div>
+                    <div class="col-sm-12 col-lg-4 order-lg-3"></div>
+                </section>
+                <section id="registers" class="row">
+                </section>
+                <section id="rstations" class="row"></section>
+
+            </div>
+
             <button class="menu-button btn btn-dark">
                 <i class="bi bi-list"></i>
             </button>
@@ -63,7 +85,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" id="saveButton">Salvar</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        id="saveButton">Salvar</button>
                 </div>
             </div>
         </div>
@@ -84,12 +107,12 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a type="button" id="downloadButton" class="btn btn-primary bi bi-download" onclick="downloadResult"></a>
+                    <a type="button" id="downloadButton" class="btn btn-primary bi bi-download"
+                        onclick="downloadResult"></a>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Vertically centered modal -->
     <script>
         let code =
             `00100000000010000000000000110001
@@ -145,13 +168,35 @@
             code = textInput.innerHTML.toString();
         }
 
-        const downloadButton =  document.querySelector("#downloadButton");
+        const downloadButton = document.querySelector("#downloadButton");
         downloadButton.onclick = (event) => {
             let blob = new Blob([code], { type: 'text/plain' });
             event.target.download = "resultado.txt";
             event.target.href = window.URL.createObjectURL(blob);
         }
 
+    </script>
+    <script>
+        const reset = document.querySelector("#reset");
+        const run = document.querySelector("#run");
+        const pause = document.querySelector("#pause");
+        const foward = document.querySelector("#foward");
+
+        run.onclick = () => {
+            const commands = code.split('\n');
+            const instructions = document.querySelector("#instructions-list");
+            instructions.innerText = "";
+            
+            const fragment = document.createDocumentFragment();
+            for (const command of commands) {
+                const li = document.createElement("li");
+                li.classList.add("list-group-item");
+                li.innerText = command;
+                fragment.appendChild(li);
+            }
+            fragment.firstChild.classList.add("active");
+            instructions.appendChild(fragment);
+        };
     </script>
     <script type="module" src="index.js"></script>
 </body>
