@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tomasulo</title>
     <link rel="stylesheet" href="../scss/main.scss">
+    <script src="/node_modules/bootstrap/js/dist/modal.js" type="module"></script>
 </head>
 
 <body>
@@ -15,6 +16,27 @@
             <div class="container-fluid mt-1 text-center">
                 <h3 class="text-center">Tomasulo</h3>
             </div>
+            <div class="container-fluid btn-group mt-4 mb-4">
+                <button class="btn btn-secondary stop" title="Reset"><i
+                        class="bi bi-arrow-counterclockwise"></i></i></button>
+                <button class="btn btn-secondary" title="Rodar"><i class="bi bi-play"></i></button>
+                <button class="btn btn-secondary" title="Pausar"><i class="bi bi-pause"></i></button>
+                <button class="btn btn-secondary" title="Próximo"><i class="bi bi-fast-forward"></i></button>
+            </div>
+            <div class="container-fluid input-group mt-4 mb-3 input">
+                <button class="btn btn-secondary w-100" title="Carregar código" data-bs-toggle="modal"
+                    data-bs-target="#uploadModal">
+                    Carregar Código
+                    <i class="bi bi-upload float-end"></i>
+                </button>
+            </div>
+            <div class="container-fluid input-group">
+                <button class="btn btn-secondary w-100" title="Carregar código" data-bs-toggle="modal"
+                    data-bs-target="#downloadModal">
+                    Salvar Execução
+                    <i class="bi bi-download float-end"></i>
+                </button>
+            </div>
         </section>
         <section class="it">
             <button class="menu-button btn btn-dark">
@@ -22,14 +44,114 @@
             </button>
         </section>
     </main>
+    <div id="uploadModal" class="modal w-70">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Carregar Código</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Escolha um arquivo ou utilize o código atual.</p>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="codeFileInput">
+                    </div>
+                    <div class="form-floating">
+                        <textarea class="form-control" id="codeTextInput" style="height: 200px"></textarea>
+                        <label for="codeTextInput">Código atual</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" id="saveButton">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="downloadModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Salvar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Fazer download do resultado em txt?</p>
+                    <div class="form-floating">
+                        <textarea class="form-control" id="codeTextOutput" style="height: 200px" readonly></textarea>
+                        <label for="codeTextInput">Código atual</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" id="downloadButton" class="btn btn-primary bi bi-download" onclick="downloadResult"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Vertically centered modal -->
     <script>
+        let code =
+            `00100000000010000000000000110001
+00100000000010010000000000100001
+00100000000010100000000000100001
+00100000000010110000000010001001
+10101100000010000000000000000000
+00000001000000000000000000001000
+00000001000010011000000000100000
+00000001000010011000100000100010
+00010010000100010000000000001111
+00000010001100001001000000101010
+00000000000100011001100011000000
+00000010000100010101100000100100
+10001100000101000000000000000000`
+
         const menu = document.querySelector(".menu");
         const menuBtn = document.querySelector(".menu-button")
-
         menuBtn.onclick = () => {
             menu.classList.toggle("menu-visible");
             menu.classList.toggle("menu-hidden");
         }
+
+        const textInput = document.querySelector("#codeTextInput");
+        const textOutput = document.querySelector("#codeTextOutput");
+        const fileInput = document.querySelector("#codeFileInput");
+        fileInput.onchange = () => {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const result = event.target.result;
+                textInput.innerHTML = result;
+            }
+
+            reader.readAsText(file);
+        }
+
+        const upModal = document.querySelector("#uploadModal");
+        upModal.addEventListener("show.bs.modal", () => {
+            fileInput.files.length = 0;
+            fileInput.value = "";
+            textInput.innerHTML = code;
+        })
+
+        const downModal = document.querySelector("#downloadModal");
+        downModal.addEventListener("show.bs.modal", () => {
+            textOutput.innerHTML = code;
+        })
+
+        const saveButton = document.querySelector("#saveButton");
+        saveButton.onclick = () => {
+            code = textInput.innerHTML.toString();
+        }
+
+        const downloadButton =  document.querySelector("#downloadButton");
+        downloadButton.onclick = (event) => {
+            let blob = new Blob([code], { type: 'text/plain' });
+            event.target.download = "resultado.txt";
+            event.target.href = window.URL.createObjectURL(blob);
+        }
+
     </script>
     <script type="module" src="index.js"></script>
 </body>

@@ -40,3 +40,24 @@ main {
 .it {
     flex-grow: 1;
 }
+
+.btn-group::after {
+    position: absolute;
+    top: -1.7em;
+    font-size: 0.9em;
+    color: whitesmoke;
+    content: "Controles";
+}
+
+.input::after {
+    position: absolute;
+    top: -1.7em;
+    font-size: 0.9em;
+    color: whitesmoke;
+    content: "Entrada e Saída";
+}
+
+.stop:hover {
+    background-color: red;
+    border: red;
+}
