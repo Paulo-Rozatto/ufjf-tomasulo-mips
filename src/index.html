@@ -206,8 +206,7 @@
     <script type="module">
         import * as cpu from './index.js'
 
-        let code =
-            `00000000010100001001000110000001`; // fadd $3, $1, $5
+        let code = `00000000010100001001000110000001`; // fadd $3, $1, $5
 
         const menu = document.querySelector(".menu");
         const menuBtn = document.querySelector(".menu-button")
@@ -233,7 +232,6 @@
 
         const upModal = document.querySelector("#uploadModal");
         upModal.addEventListener("show.bs.modal", () => {
-            fileInput.files.length = 0;
             fileInput.value = "";
             textInput.innerHTML = code;
         })
