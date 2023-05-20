@@ -1,212 +1,128 @@
-const memory = new ArrayBuffer(512); // memory size in bytes
-const memView = new Float64Array(memory); // view memory as 64-bit floats as we are working only with doubles
+import * as cpu from './cpu.js'
 
-const registers = new Float64Array(32); // 16 registers, each one 64-bit float
-const regStats = new Uint8Array(32); // 16 registers, each one 8-bit unsigned integer
+let code = `00000000010100001001000110000001`; // fadd $3, $1, $5
 
-let pc = 0; // program counter
-
-const instructions = {
-    _data: [],
-    set(data) {
-        this._data = data;
-    },
-    get(byte) {
-        return this._data[byte / 4];
-    }
+const menu = document.querySelector(".menu");
+const menuBtn = document.querySelector(".menu-button")
+menuBtn.onclick = () => {
+    menu.classList.toggle("menu-visible");
+    menu.classList.toggle("menu-hidden");
 }
 
-let uiCallbacks = {
-    issue: () => { },
-    writeBack: () => { },
-}
+const textInput = document.querySelector("#codeTextInput");
+const textOutput = document.querySelector("#codeTextOutput");
+const fileInput = document.querySelector("#codeFileInput");
+fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    const reader = new FileReader();
 
-export function setInstructions(commands, callbacks) {
-    const binaryInstructions = commands.map(command => parseInt(command, 2));
-    instructions.set(binaryInstructions);
-    uiCallbacks = { ...uiCallbacks, ...callbacks };
-}
-
-export function step() {
-    writeBack();
-    execute()
-    issue();
-}
-
-const operations = {
-    0b0000001: { // r type
-        0b001: {
-            name: 'fadd',
-            op: (rs1, rs2) => rs1 + rs2,
-            cicles: 1,
-            station: 1,
-        },
-        0b010: {
-            name: 'fsub',
-            op: (rs1, rs2) => rs1 - rs2,
-            cicles: 1,
-            station: 1,
-        },
-        0b011: {
-            name: 'fmul',
-            op: (rs1, rs2) => rs1 * rs2,
-            cicles: 10,
-            station: 2,
-        },
-        0b100: {
-            name: 'fdiv',
-            op: (rs1, rs2) => rs1 / rs2,
-            cicles: 40,
-            station: 2,
-        },
-        getParams: (instruction) => {
-            const rs1 = (instruction >> 15) & 0b11111;
-            const rs2 = (instruction >> 20) & 0b11111;
-            const rd = (instruction >> 7) & 0b11111;
-            return { rs1, rs2, rd };
-        }
-    }
-}
-
-const stations = {
-    1: [
-        {
-            id: 1,
-            busy: 0,
-            op: 0,
-            opName: "",
-            vj: 0,
-            vk: 0,
-            qj: 0,
-            qk: 0,
-            cicles: 0,
-        },
-        {
-            id: 2,
-            busy: 0,
-            op: 0,
-            opName: "",
-            vj: 0,
-            vk: 0,
-            qj: 0,
-            qk: 0,
-            cicles: 0,
-        },
-        {
-            id: 3,
-            busy: 0,
-            op: 0,
-            opName: "",
-            vj: 0,
-            vk: 0,
-            qj: 0,
-            qk: 0,
-            cicles: 0,
-        },
-    ],
-}
-
-registers[1] = 1.1;
-registers[5] = 5;
-function issue() {
-    const instruction = instructions.get(pc);
-    const opcode = instruction & 0b1111111; // [6-0]
-    const funct = (instruction >> 12) & 0b11 // [14-12]
-
-    const operation = !!operations[opcode] ? operations[opcode][funct] : 0;
-    if (!operation) {
-        console.warn('operation not found')
-        return;
-    }
-    const params = operations[opcode].getParams(instruction);
-    const station = stations[operation.station].find(station => !station.busy);
-
-    if (!station) {
-        console.warn('stall')
-        return;
+    reader.onload = (event) => {
+        const result = event.target.result;
+        textInput.innerHTML = result;
     }
 
-    const { rs1, rs2, rd } = params;
-    if (regStats[rs1] != 0) {
-        station.qj = regStats[rs1];
-    } else {
-        station.vj = registers[rs1]
-        station.qj = 0;
-    }
-
-    if (regStats[rs2] != 0) {
-        station.qk = regStats[rs2];
-    } else {
-        station.vk = registers[rs2];
-        station.qk = 0;
-    }
-    station.busy = true;
-    station.op = operation.op;
-    station.opName = operation.name;
-    console.log("oi")
-    regStats[rd] = station.id;
-
-
-    pc += 4;
-    uiCallbacks.issue(station);
+    reader.readAsText(file);
 }
 
-const adder = {
-    busy: false,
-    ready: true,
-    station: null,
-    result: 0
-}
+const upModal = document.querySelector("#uploadModal");
+upModal.addEventListener("show.bs.modal", () => {
+    fileInput.value = "";
+    textInput.innerHTML = code;
+})
 
-function execute() {
-    if (!adder.busy) {
-        const adderStation = stations[1].find(station => !station.busy && station.qj == 0 && station.qk == 0);
-        if (adderStation) {
-            adder.busy = true;
-            adder.ready = 0;
-            adder.station = adderStation;
-        }
-    } else if (adder.station.cicles == 0) {
-        adder.result = adder.station.op(adder.station.vj, adder.station.vk);
-        adder.ready = 1;
-    } else {
-        adder.cicles--;
+const downModal = document.querySelector("#downloadModal");
+downModal.addEventListener("show.bs.modal", () => {
+    textOutput.innerHTML = code;
+})
+
+const saveButton = document.querySelector("#saveButton");
+saveButton.onclick = () => {
+    code = textInput.innerHTML.toString();
+    const commands = code.split('\n');
+    const instructions = document.querySelector("#instructions-list");
+    instructions.innerText = "";
+
+    const fragment = document.createDocumentFragment();
+    for (const command of commands) {
+        const li = document.createElement("li");
+        li.classList.add("list-group-item");
+        li.innerText = command;
+        fragment.appendChild(li);
     }
-
-
+    fragment.firstChild.classList.add("active");
+    instructions.appendChild(fragment);
+    cpu.setInstructions(commands, uiCallbacks)
 }
 
-function writeBack() {
-    const uiStations = new Set();
-    const uiRegisters = new Set();
-    console.log("wb")
-
-    if (adder.ready && adder.busy) {
-        regStats.forEach((stat, i) => {
-            if (stat == adder.station.id) {
-                registers[i] = adder.result;
-                regStats[i] = 0;
-                uiRegisters.add({ id: i, value: adder.result });
-            }
-        })
-
-        stations[1].forEach(station => {
-            if (station.qj == adder.station.id) {
-                station.qj = 0;
-                station.vj = adder.result;
-                uiStations.add(station);;
-            }
-            if (station.qk == adder.station.id) {
-                station.qk = 0;
-                station.vk = adder.result;
-                uiStations.add(station);
-            }
-        });
-
-        adder.busy = false;
-        adder.station.busy = false;
-        uiStations.add(adder.station);
-    }
-
-    uiCallbacks.writeBack(uiStations, uiRegisters);
+const downloadButton = document.querySelector("#downloadButton");
+downloadButton.onclick = (event) => {
+    let blob = new Blob([code], { type: 'text/plain' });
+    event.target.download = "resultado.txt";
+    event.target.href = window.URL.createObjectURL(blob);
 }
+
+const reset = document.querySelector("#reset");
+const run = document.querySelector("#run");
+const pause = document.querySelector("#pause");
+const foward = document.querySelector("#foward");
+
+foward.onclick = cpu.step;
+
+const rsCallback = (station) => {
+    const id = station.opName + station.id;
+    const li = document.querySelector(`#${id}`);
+    li.children[0].innerText = station.busy ? "busy" : "free";
+    li.children[1].innerText = station.opName;
+    li.children[2].innerText = station.vj.toFixed(2);
+    li.children[3].innerText = station.vk.toFixed(2);
+    li.title = `Qj: ${station.qj}\nQk: ${station.qk}`;
+    li.classList.add("active");
+    setTimeout(() => {
+        li.classList.remove("active");
+    }, 950);
+}
+
+const wbCallback = (stations, registers) => {
+    stations.forEach(stationg => {
+        const id = stationg.opName + stationg.id;
+        const li = document.querySelector(`#${id}`);
+        li.children[0].innerText = stationg.busy ? "busy" : "free";
+        li.children[1].innerText = stationg.opName;
+        li.children[2].innerText = stationg.vj.toFixed(2);
+        li.children[3].innerText = stationg.vk.toFixed(2);
+        li.title = `Qj: ${stationg.qj}\nQk: ${stationg.qk}`;
+        li.classList.add("active");
+        setTimeout(() => {
+            li.classList.remove("active");
+        }, 950);
+    });
+
+    registers.forEach(reg => {
+        const li = document.querySelector(`#f${reg.id}`);
+        li.children[1].innerText = reg.value.toString(2).slice(0, 31) + "...";
+        li.title = reg.value;
+        li.classList.add("active");
+        console.log(registersList.scrollHeight, registersList.scrollTop, li.clientHeight)
+        registersList.scrollTo({ top: li.clientHeight * reg.id, behavior: "smooth" })
+        setTimeout(() => {
+            li.classList.remove("active");
+        }, 950);
+    })
+}
+
+const uiCallbacks = {
+    issue: rsCallback,
+    writeBack: wbCallback,
+}
+
+const registersList = document.querySelector("#registers-list");
+let fragment = document.createDocumentFragment();
+for (let i = 0; i < 32; i++) {
+    const li = document.createElement("li");
+    li.classList.add("list-group-item");
+    li.id = `f${i}`
+    li.innerHTML = `<strong class="float-start">f${i}</strong>
+                            <span class="float-end">00000000000000000000000000000000</span>`;
+    fragment.appendChild(li);
+}
+registersList.appendChild(fragment);
