@@ -100,27 +100,9 @@
                     </div>
                     <div class="col-sm-12 col-lg-4 order-lg-3 h-100">
                         <h5 class="mx-auto text-white">Registradores</h5>
-                        <ul id="registers" class="list-group w-100 h-75" style="margin: auto; overflow: auto;">
-                            <li class="list-group-item" id="f0">
-                                <strong class="float-start">f0</strong>
-                                <span class="float-end">00000000000000000000000000000000</span>
-                            </li>
-                            <li class="list-group-item" id="f1">
-                                <strong class="float-start">f1</strong>
-                                <span class="float-end">00000000000000000000000000000000</span>
-                            </li>
-                            <li class="list-group-item" id="f2">
-                                <strong class="float-start">f2</strong>
-                                <span class="float-end">00000000000000000000000000000000</span>
-                            </li>
-                            <li class="list-group-item" id="f3">
-                                <strong class="float-start">f3</strong>
-                                <span class="float-end">00000000000000000000000000000000</span>
-                            </li>
-                            <li class="list-group-item" id="f4">
-                                <strong class="float-start">f4</strong>
-                                <span class="float-end">00000000000000000000000000000000</span>
-                            </li>
+                        <ul id="registers-list" class="list-group w-100 h-75" style="margin: auto; overflow: auto;">
+                            <!-- precisa desse li para o parce nao bugar (?) -->
+                            <li style="display: none;"></li> 
                         </ul>
                     </div>
                 </section>
@@ -128,12 +110,6 @@
                     <div class="col-sm-12 col-lg-4 order-lg-1 h-100">
                         <h5 class="mx-auto text-white">F.Add RS</h5>
                         <ul id="rs-fadd" class="list-group w-75 h-75" style="overflow: auto;">
-                            <li class="list-group-item d-inline-flex justify-content-between" id="fadd0">
-                                <strong class="">free</strong>
-                                <span class="">add</span>
-                                <span class="">000</span>
-                                <span class="">000</span>
-                            </li>
                             <li class="list-group-item d-inline-flex justify-content-between" id="fadd1">
                                 <strong class="">free</strong>
                                 <span class="">add</span>
@@ -141,6 +117,12 @@
                                 <span class="">000</span>
                             </li>
                             <li class="list-group-item d-inline-flex justify-content-between" id="fadd2">
+                                <strong class="">free</strong>
+                                <span class="">add</span>
+                                <span class="">000</span>
+                                <span class="">000</span>
+                            </li>
+                            <li class="list-group-item d-inline-flex justify-content-between" id="fadd3">
                                 <strong class="">free</strong>
                                 <span class="">add</span>
                                 <span class="">000</span>
@@ -225,7 +207,7 @@
         import * as cpu from './index.js'
 
         let code =
-            `00000000010100001001000110000001` // fadd $3, $1, $5
+            `00000000010100001001000110000001`; // fadd $3, $1, $5
 
         const menu = document.querySelector(".menu");
         const menuBtn = document.querySelector(".menu-button")
@@ -297,7 +279,6 @@
         const rsCallback = (station) => {
             const id = station.opName + station.id;
             const li = document.querySelector(`#${id}`);
-            console.log(li.children);
             li.children[0].innerText = station.busy ? "busy" : "free";
             li.children[1].innerText = station.opName;
             li.children[2].innerText = station.vj.toFixed(2);
@@ -309,9 +290,51 @@
             }, 950);
         }
 
+        const wbCallback = (stations, registers) => {
+            stations.forEach(stationg => {
+                const id = stationg.opName + stationg.id;
+                const li = document.querySelector(`#${id}`);
+                li.children[0].innerText = stationg.busy ? "busy" : "free";
+                li.children[1].innerText = stationg.opName;
+                li.children[2].innerText = stationg.vj.toFixed(2);
+                li.children[3].innerText = stationg.vk.toFixed(2);
+                li.title = `Qj: ${stationg.qj}\nQk: ${stationg.qk}`;
+                li.classList.add("active");
+                setTimeout(() => {
+                    li.classList.remove("active");
+                }, 950);
+            });
+
+            let id;
+            registers.forEach(reg => {
+                const li = document.querySelector(`#f${reg.id}`);
+                li.children[1].innerText = reg.value.toString(2).slice(0, 31) + "...";
+                li.title = reg.value;
+                li.classList.add("active");
+                console.log(registersList.scrollHeight, registersList.scrollTop, li.clientHeight)
+                registersList.scrollTo({top: li.clientHeight * reg.id, behavior: "smooth"})
+                setTimeout(() => {
+                    li.classList.remove("active");
+                }, 950);
+            })
+        }
+
         const uiCallbacks = {
             issue: rsCallback,
+            writeBack: wbCallback,
         }
+
+        const registersList = document.querySelector("#registers-list");
+        let fragment = document.createDocumentFragment();
+        for (let i = 0; i < 32; i++) {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item");
+            li.id = `f${i}`
+            li.innerHTML = `<strong class="float-start">f${i}</strong>
+                            <span class="float-end">00000000000000000000000000000000</span>`;
+            fragment.appendChild(li);
+        }
+        registersList.appendChild(fragment);
 
     </script>
 </body>
