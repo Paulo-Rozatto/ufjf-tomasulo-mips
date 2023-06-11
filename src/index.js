@@ -82,6 +82,27 @@ const rsCallback = (station) => {
     }, 950);
 }
 
+const exCallback = (adder, mult) => {
+    const li = document.querySelector("#adder");
+    const stationId = adder.station ? String(adder.station.id).padStart(2, "0") : "--";
+    li.children[0].innerText = adder.busy ? "busy" : "free";
+    li.children[1].innerText = `rs#${stationId}`;
+    li.children[2].innerText = String(adder.station.cicles).padStart(2, "0");
+    li.classList.add("active");
+    setTimeout(() => {
+        li.classList.remove("active");
+    }, 950);
+
+    // const li2 = document.querySelector("#mult");
+    // li2.children[0].innerText = mult.busy ? "busy" : "free";
+    // li2.children[1].innerText = mult.station ? mult.station.opName : "";
+    // li2.children[2].innerText = mult.result.toFixed(2);
+    // li2.classList.add("active");
+    // setTimeout(() => {
+    //     li2.classList.remove("active");
+    // }, 950);
+}
+
 const wbCallback = (stations, registers) => {
     stations.forEach(stationg => {
         const id = stationg.opName + stationg.id;
@@ -112,6 +133,7 @@ const wbCallback = (stations, registers) => {
 
 const uiCallbacks = {
     issue: rsCallback,
+    execute: exCallback,
     writeBack: wbCallback,
 }
 

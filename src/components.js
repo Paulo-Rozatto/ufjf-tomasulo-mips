@@ -83,7 +83,7 @@ export const stations = {
 
 export const adder = {
     busy: false,
-    ready: true,
+    ready: false,
     station: null,
     result: 0
 }
