@@ -1,4 +1,4 @@
-import { instructions, operations, stations, adder } from './components.js'
+import { instructions, operations, stations, adder, cdb } from './components.js'
 import { issue } from './stages/issue.js'
 import { execute } from './stages/execute.js';
 import { writeBack } from './stages/writeback.js';
@@ -18,8 +18,8 @@ let uiCallbacks = {
 }
 
 issue.init(instructions, operations, stations, regStats, registers, pc);
-execute.init(adder, stations);
-writeBack.init(adder, stations, registers, regStats);
+execute.init(adder, stations, registers, memView, cdb);
+writeBack.init(stations, registers, regStats, cdb);
 
 export function setInstructions(commands, callbacks) {
     const binaryInstructions = commands.map(command => parseInt(command, 2));
@@ -27,10 +27,10 @@ export function setInstructions(commands, callbacks) {
     uiCallbacks = { ...uiCallbacks, ...callbacks };
 }
 
+let opcode, operation, station, params;
 export function step() {
-    console.log('step')
     issue.read();
-    execute.read();
+    execute.read(opcode, operation, station, params);
     writeBack.read();
 
     issue.write(uiCallbacks.issue);

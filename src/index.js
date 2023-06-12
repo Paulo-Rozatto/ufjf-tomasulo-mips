@@ -2,6 +2,9 @@ import * as cpu from './cpu.js'
 
 let code = `00000000010100001001000110000001`; // fadd $3, $1, $5
 
+// lw $1 2($3)
+code = `00000000100001000000000000000010` + "\n" + code;
+
 const menu = document.querySelector(".menu");
 const menuBtn = document.querySelector(".menu-button")
 menuBtn.onclick = () => {
@@ -68,7 +71,7 @@ const foward = document.querySelector("#foward");
 
 foward.onclick = cpu.step;
 
-const rsCallback = (station) => {
+const rtypeCallback = (station) => {
     const id = station.opName + station.id;
     const li = document.querySelector(`#${id}`);
     li.children[0].innerText = station.busy ? "busy" : "free";
@@ -82,16 +85,54 @@ const rsCallback = (station) => {
     }, 950);
 }
 
-const exCallback = (adder, mult) => {
-    const li = document.querySelector("#adder");
-    const stationId = adder.station ? String(adder.station.id).padStart(2, "0") : "--";
-    li.children[0].innerText = adder.busy ? "busy" : "free";
-    li.children[1].innerText = `rs#${stationId}`;
-    li.children[2].innerText = String(adder.station.cicles).padStart(2, "0");
+const loadStoreCallback = (station) => {
+    const id = station.opName + station.id;
+    const li = document.querySelector(`#${id}`);
+    const bufferList = li.parentElement;
+    li.children[0].title = station.vk;
+    li.children[0].innerText = "0x" + station.vk.toString(16).padStart(3, "0")
+    li.children[1].innerText = station.vj;
     li.classList.add("active");
     setTimeout(() => {
         li.classList.remove("active");
     }, 950);
+    bufferList.scrollTo({ top: li.clientHeight * station.id, behavior: "smooth" })
+}
+
+const issueCallback = ({ station, buffer }) => {
+    if (station) {
+        rtypeCallback(station);
+    } else if (buffer) {
+        loadStoreCallback(buffer);
+    }
+}
+
+const exCallback = ({ adder, mult, station: fldStation }) => {
+    if (adder) {
+        const li = document.querySelector("#adder");
+        const stationId = adder.station ? String(adder.station.id).padStart(2, "0") : "--";
+        li.children[0].innerText = adder.busy ? "busy" : "free";
+        li.children[1].innerText = `rs#${stationId}`;
+        li.children[2].innerText = String(adder.station.cicles).padStart(2, "0");
+        li.classList.add("active");
+        setTimeout(() => {
+            li.classList.remove("active");
+        }, 950);
+    }
+
+    if (fldStation) {
+        const id = fldStation.opName + fldStation.id;
+        const li = document.querySelector(`#${id}`);
+        const bufferList = li.parentElement;
+        li.children[0].title = fldStation.vk;
+        li.children[0].innerText = "0x" + fldStation.vk.toString(16).padStart(3, "0")
+        li.children[1].innerText = fldStation.vj;
+        li.classList.add("active");
+        setTimeout(() => {
+            li.classList.remove("active");
+        }, 950);
+        bufferList.scrollTo({ top: li.clientHeight * fldStation.id, behavior: "smooth" })
+    }
 
     // const li2 = document.querySelector("#mult");
     // li2.children[0].innerText = mult.busy ? "busy" : "free";
@@ -107,11 +148,11 @@ const wbCallback = (stations, registers) => {
     stations.forEach(stationg => {
         const id = stationg.opName + stationg.id;
         const li = document.querySelector(`#${id}`);
-        li.children[0].innerText = stationg.busy ? "busy" : "free";
-        li.children[1].innerText = stationg.opName;
-        li.children[2].innerText = stationg.vj.toFixed(2);
-        li.children[3].innerText = stationg.vk.toFixed(2);
-        li.title = `Qj: ${stationg.qj}\nQk: ${stationg.qk}`;
+        // li.children[0].innerText = stationg.busy ? "busy" : "free";
+        // li.children[1].innerText = stationg.opName;
+        // li.children[2].innerText = stationg.vj.toFixed(2);
+        // li.children[3].innerText = stationg.vk.toFixed(2);
+        // li.title = `Qj: ${stationg.qj}\nQk: ${stationg.qk}`;
         li.classList.add("active");
         setTimeout(() => {
             li.classList.remove("active");
@@ -123,7 +164,6 @@ const wbCallback = (stations, registers) => {
         li.children[1].innerText = reg.value.toString(2).slice(0, 31) + "...";
         li.title = reg.value;
         li.classList.add("active");
-        console.log(registersList.scrollHeight, registersList.scrollTop, li.clientHeight)
         registersList.scrollTo({ top: li.clientHeight * reg.id, behavior: "smooth" })
         setTimeout(() => {
             li.classList.remove("active");
@@ -132,7 +172,7 @@ const wbCallback = (stations, registers) => {
 }
 
 const uiCallbacks = {
-    issue: rsCallback,
+    issue: issueCallback,
     execute: exCallback,
     writeBack: wbCallback,
 }

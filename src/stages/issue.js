@@ -16,18 +16,45 @@ function read() {
     opcode = instruction & 0b1111111; // [6-0]
     funct = (instruction >> 12) & 0b11 // [14-12]
 
-    operation = !operations[opcode] ? 0 : operations[opcode][funct];
+    operation = operations[opcode];
+
     if (!operation) {
         console.warn('operation not found')
         return;
     }
 
-    params = operations[opcode].getParams(instruction);
+    if (opcode == 0b0000001) {
+        operation = operation[funct];
+    }
+
     station = stations[operation.station].find(station => !station.busy);
+    params = operations[opcode].getParams(instruction);
 }
 
 function write(uiCallback) {
-    if (!station || !operation) {
+    if (!operation) {
+        console.warn('stall')
+        return;
+    }
+
+    switch (opcode) {
+        case 0b0000001: // r type
+            writeR();
+            uiCallback({ station });
+            break;
+        case 0b0000010: // i type
+            writeI();
+            uiCallback({ buffer: station });
+            break;
+    }
+
+
+    pc += 4;
+    return { opcode, operation, station, params };
+}
+
+function writeR() {
+    if (!station) {
         console.warn('stall')
         return;
     }
@@ -52,10 +79,30 @@ function write(uiCallback) {
     station.opName = operation.name;
     station.cicles = operation.cicles;
     regStats[rd] = station.id;
+}
 
+function writeI() {
+    if (!station) {
+        console.warn('stall')
+        return;
+    }
 
-    pc += 4;
-    uiCallback(station);
+    const { rs1, rd, imm } = params;
+
+    if (regStats[rs1] != 0) {
+        station.qj = regStats[rs1];
+    } else {
+        station.vj = registers[rs1]
+        station.qj = 0;
+    }
+    regStats[rd] = station.id;
+    console.log(1   )
+    station.busy = true;
+    station.op = operation.op;
+    station.opName = operation.name;
+    station.cicles = operation.cicles;
+    station.vk = imm;
+
 }
 
 export const issue = {

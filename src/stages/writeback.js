@@ -1,24 +1,24 @@
-let adder, stations, registers, regStats;
+let stations, registers, regStats, cdb;
 
-function init(_adder, _stations, _registers, _regStats) {
-    adder = _adder;
+function init(_stations, _registers, _regStats, _cdb) {
     stations = _stations;
     registers = _registers;
     regStats = _regStats;
+    cdb = _cdb;
 }
 
-let isReady, station, result;
+let station, result, busy;
 function read() {
-    isReady = adder.ready;
-    result = adder.result;
-    station = {...adder.station}; // copy object
+    busy = cdb.busy;
+    result = cdb.result;
+    station = { ...cdb.station }; // copy object
 }
 
 function write(uiCallback) {
     const uiStations = new Set();
     const uiRegisters = new Set();
 
-    if (isReady) {
+    if (busy) {
         regStats.forEach((stat, i) => {
             if (stat == station.id) {
                 registers[i] = result;
@@ -27,7 +27,8 @@ function write(uiCallback) {
             }
         })
 
-        stations[1].forEach(station => {
+        const allStations = Object.values(stations).flatMap(e => e);
+        allStations.forEach(station => {
             if (station.qj == station.id) {
                 station.qj = 0;
                 station.vj = result;
@@ -40,6 +41,9 @@ function write(uiCallback) {
             }
         });
 
+        cdb.result = 0;
+        cdb.station = null;
+        cdb.busy = false;
         uiStations.add(station);
     }
 
