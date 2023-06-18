@@ -14,7 +14,7 @@ function read() {
     station = { ...cdb.station }; // copy object
 }
 
-function write(uiCallback) {
+function write(uiCall) {
     const uiStations = new Set();
     const uiRegisters = new Set();
 
@@ -32,7 +32,7 @@ function write(uiCallback) {
             if (station.qj == station.id) {
                 station.qj = 0;
                 station.vj = result;
-                uiStations.add(station);;
+                uiStations.add(station);
             }
             if (station.qk == station.id) {
                 station.qk = 0;
@@ -47,7 +47,7 @@ function write(uiCallback) {
         uiStations.add(station);
     }
 
-    uiCallback(uiStations, uiRegisters);
+    uiCall(uiStations, uiRegisters);
 }
 
 export const writeBack = {

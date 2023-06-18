@@ -31,7 +31,7 @@ function read() {
     params = operations[opcode].getParams(instruction);
 }
 
-function write(uiCallback) {
+function write(uiCall) {
     if (!operation) {
         console.warn('stall')
         return;
@@ -40,17 +40,14 @@ function write(uiCallback) {
     switch (opcode) {
         case 0b0000001: // r type
             writeR();
-            uiCallback({ station });
             break;
         case 0b0000010: // i type
             writeI();
-            uiCallback({ buffer: station });
             break;
     }
 
-
     pc += 4;
-    return { opcode, operation, station, params };
+    uiCall(station);
 }
 
 function writeR() {
@@ -96,7 +93,6 @@ function writeI() {
         station.qj = 0;
     }
     regStats[rd] = station.id;
-    console.log(1   )
     station.busy = true;
     station.op = operation.op;
     station.opName = operation.name;

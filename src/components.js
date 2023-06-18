@@ -86,7 +86,7 @@ export const stations = {
 for (let i = 1; i <= 3; i++) {
     let rs = { ...station };
     rs.id = i;
-    opName = "fadd";
+    rs.opName = "fadd";
     stations[ADD_RS].push(rs);
 }
 

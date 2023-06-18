@@ -16,11 +16,15 @@ function read() {
     fldStation = stations[FLD_RS].find(station => station.busy && station.qj == 0);
 }
 
-function write(uiCallback) {
+let adderUi, stationUi; // referefences to adder and station if they are to be updated in the ui
+function write(uiCall) {
+    adderUi = null;
+    stationUi = null;
+
     if (adder.busy) {
         if (!adder.ready) {
             adder.station.cicles--;
-            updateUi = true;
+            adderUi = adder;
 
             if (adder.station.cicles == 0) {
                 adder.ready = true;
@@ -40,7 +44,7 @@ function write(uiCallback) {
         adder.busy = true;
         adder.ready = false;
         adder.station = adderStation;
-        updateUi = true;
+        adderUi = adder;
     }
 
     if (fldStation) {
@@ -59,13 +63,11 @@ function write(uiCallback) {
             cdb.station = fldStation;
             fldStation.busy = false;
             fldStation.ready = false;
-            updateUi = true;
+            stationUi = fldStation;
         }
     }
 
-    if (updateUi) {
-        uiCallback({fldStation});
-    }
+    uiCall(adderUi, stationUi);
 }
 
 export const execute = {

@@ -11,7 +11,7 @@ const regStats = new Uint8Array(32); // 16 registers, each one 8-bit unsigned in
 
 let pc = 0; // program counter
 
-let uiCallbacks = {
+let ui = {
     issue: () => { },
     execute: () => { },
     writeBack: () => { },
@@ -21,21 +21,23 @@ issue.init(instructions, operations, stations, regStats, registers, pc);
 execute.init(adder, stations, registers, memView, cdb);
 writeBack.init(stations, registers, regStats, cdb);
 
-export function setInstructions(commands, callbacks) {
+export function setInstructions(commands) {
     const binaryInstructions = commands.map(command => parseInt(command, 2));
     instructions.set(binaryInstructions);
-    uiCallbacks = { ...uiCallbacks, ...callbacks };
 }
 
-let opcode, operation, station, params;
+export function setUICallbacks(callbacks) {
+    ui = { ...ui, ...callbacks };
+}
+
 export function step() {
     issue.read();
-    execute.read(opcode, operation, station, params);
+    execute.read();
     writeBack.read();
 
-    issue.write(uiCallbacks.issue);
-    execute.write(uiCallbacks.execute);
-    writeBack.write(uiCallbacks.writeBack);
+    issue.write(ui.issue);
+    execute.write(ui.execute);
+    writeBack.write(ui.writeBack);
 }
 
 registers[1] = 1.1;
