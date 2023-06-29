@@ -1,3 +1,5 @@
+import { binToAssembly } from "./translator";
+
 const instructions = document.querySelector("#instructions-list");
 const memory = document.querySelector("#memory-list");
 const registers = document.querySelector("#registers-list");
@@ -14,6 +16,7 @@ function newSingleCell(id, instruction) {
     li.id = id;
     li.classList = "list-group-item text-center";
     li.innerText = instruction;
+    li.title = binToAssembly(instruction);
     return li;
 }
 
@@ -52,6 +55,7 @@ function init() {
 
     const zero32 = "0".repeat(32);
     const address = (i) => "0x" + i.toString(16).padStart(2, "0");
+    const reg  = (i) => "$" + i.toString(10).padStart(2, "0");
 
     for (let i = 0; i < 64; i++) {
         const li = newDoubleCell(`mem-${i}`, address(i), zero32);
@@ -59,7 +63,7 @@ function init() {
     }
 
     for (let i = 0; i < 32; i++) {
-        const li = newDoubleCell(`reg-${i}`, address(i), zero32);
+        const li = newDoubleCell(`reg-${i}`, reg(i), zero32);
         registers.appendChild(li);
     }
 
@@ -118,7 +122,6 @@ export function setInstructions(commands) {
 }
 
 function updateLoadBuffer(station) {
-    console.log(station);
     const id = `fld-${station.id}`;
     const li = document.getElementById(id);
     li.innerText = station.vk.toString(2).padStart(32, "0");
@@ -155,7 +158,7 @@ function updateAdder(_adder) {
     setActive(adder);
 }
 
-function updateRegisters(registers) {
+export function updateRegisters(registers) {
     registers.forEach(reg => {
         let { id, value } = reg;
         const li = document.getElementById(`reg-${id}`);
@@ -163,6 +166,13 @@ function updateRegisters(registers) {
         li.lastElementChild.innerText = value.toString(2).slice(0, 31).padStart(32, "0") + "...";
         setActive(li);
     });
+}
+
+export function updateMemory(address, value) {
+    const li = document.getElementById(`mem-${address}`);
+    li.title = value.toFixed(2);
+    li.lastElementChild.innerText = value.toString(2).slice(0, 31).padStart(32, "0") + "...";
+    setActive(li);
 }
 
 

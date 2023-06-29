@@ -1,3 +1,8 @@
+export const TYPES = {
+    R: 0b0000001,
+    I: 0b0000010,
+}
+
 export const ADD_RS = 0b01;
 const MUL_RS = 0b00;
 export const FLD_RS = 0b10;

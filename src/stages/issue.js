@@ -1,3 +1,5 @@
+import { TYPES } from "../components";
+
 let instructions, operations, stations, regStats, registers, pc;
 
 function init(_instructions, _operations, _stations, _regStats, _registers, _pc) {
@@ -23,7 +25,7 @@ function read() {
         return;
     }
 
-    if (opcode == 0b0000001) {
+    if (opcode == TYPES.R) {
         operation = operation[funct];
     }
 

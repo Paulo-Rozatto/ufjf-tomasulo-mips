@@ -1,4 +1,5 @@
 import { setInstructions, issue, execute, writeBack, clearActive } from "./interface-handlers.js";
+import { assemblyToBin } from "./translator.js";
 import * as cpu from "./cpu.js";
 
 const menu = document.querySelector(".menu");
@@ -20,8 +21,8 @@ const pause = document.querySelector("#pause");
 const foward = document.querySelector("#foward");
 
 // conde entry
-let code = `00000000010100001001000110000001`; // fadd $3, $1, $5
-code = `00000000100001000000000000000010` + "\n" + code; // lw $1 2($3)
+let code = "fadd $3, $1, $5\n";
+code = "fld $1, 2($3)";
 
 // cpu setup
 cpu.setUICallbacks({ issue, execute, writeBack });
@@ -37,13 +38,6 @@ menuBtn.onclick = () => {
     menu.classList.toggle("menu-hidden");
 }
 
-// handle code input
-textInput.onkeydown = (event) => { // dont allow typing keys other than 0, 1, newline and backspace
-    if (event.key != "0" && event.key != "1" && event.key != "Enter" && event.key != "Backspace") {
-        event.preventDefault();
-    }
-}
-
 fileInput.onchange = () => { // read file and put it in the text input
     const file = fileInput.files[0];
     const reader = new FileReader();
@@ -57,10 +51,15 @@ fileInput.onchange = () => { // read file and put it in the text input
 }
 
 saveButton.onclick = () => { // save code from text input
-    code = textInput.innerHTML.toString();
-    const commands = code.split('\n');
-    setInstructions(commands)
-    cpu.setInstructions(commands)
+    code = textInput.innerHTML.toString().trim();
+    if (/\w/.test(code)) { // if code is not binary
+        code = code.split("\n").map(e => assemblyToBin(e)) // remove spaces
+    } else {
+        code = code.split("\n");
+    }
+
+    setInstructions(code)
+    cpu.setInstructions(code)
 }
 
 upModal.addEventListener("show.bs.modal", () => { // clear input when modal is opened
