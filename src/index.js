@@ -1,4 +1,4 @@
-import { setInstructions, issue, execute, writeBack, clearActive } from "./interface-handlers.js";
+import { setInstructions, issue, execute, writeBack, clearActive, init } from "./interface-handlers.js";
 import { assemblyToBin } from "./translator.js";
 import * as cpu from "./cpu.js";
 
@@ -20,7 +20,9 @@ const run = document.querySelector("#run");
 const pause = document.querySelector("#pause");
 const foward = document.querySelector("#foward");
 
-// conde entry
+const INTERVAL_TIME = 1000; // ms
+let interval;
+
 let code = `fld $1, 16($12)
 fadd $2, $1, $5
 fadd $3, $2, $5
@@ -33,6 +35,25 @@ cpu.setUICallbacks({ issue, execute, writeBack });
 foward.onclick = () => {
     clearActive();
     cpu.step();
+}
+
+reset.onclick = () => {
+    init();
+    clearActive();
+    cpu.reset();
+}
+
+run.onclick = () => {
+    clearActive();
+    cpu.step();
+    interval = setInterval(() => {
+        clearActive();
+        cpu.step();
+    }, INTERVAL_TIME);
+}
+
+pause.onclick = () => {
+    clearInterval(interval);
 }
 
 // handle menu visibility

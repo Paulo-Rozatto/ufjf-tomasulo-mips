@@ -15,7 +15,7 @@ function init(_instructions, _operations, _stations, _regStats, _registers, _pc,
 let instruction, opcode, funct, operation, station, params;
 
 function read() {
-    instruction = instructions.get(pc);
+    instruction = instructions.get(pc.get());
     opcode = instruction & 0b1111111; // [6-0]
     funct = (instruction >> 12) & 0b11 // [14-12]
 
@@ -35,8 +35,8 @@ function read() {
 }
 
 function write(uiCall) {
-    clock += 1;
-    uiCall(station, pc, clock);
+    clock.next();
+    uiCall(null, pc, clock);
 
     if (!operation) {
         return;
@@ -55,8 +55,8 @@ function write(uiCall) {
             break;
     }
 
-    
-    pc += 4;
+
+    pc.next();
     uiCall(station, pc, clock);
 }
 

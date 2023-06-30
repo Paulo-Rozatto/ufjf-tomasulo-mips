@@ -14,6 +14,32 @@ export const cdb = {
     station: null,
 }
 
+export const pc = {
+    value: 0,
+    next() {
+        this.value += 4;
+    },
+    reset() {
+        this.value = 0;
+    },
+    get() {
+        return this.value;
+    }
+}
+
+export const clock = {
+    value: 0,
+    next() {
+        this.value += 1;
+    },
+    reset() {
+        this.value = 0;
+    },
+    get() {
+        return this.value;
+    }
+}
+
 export const instructions = {
     _data: [],
     set(data) {

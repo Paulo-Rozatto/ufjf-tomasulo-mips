@@ -45,7 +45,7 @@ function write(uiCall) {
         cdb.result = 0;
         cdb.station = null;
         cdb.busy = false;
-        // uiStations.add(station);
+        uiStations.add(station);
     }
 
     uiCall(uiStations, uiRegisters);
