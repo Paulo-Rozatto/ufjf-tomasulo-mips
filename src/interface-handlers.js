@@ -8,6 +8,8 @@ const loadBuffer = document.querySelector("#load-buffer-list");
 const rsAdd = document.querySelector("#rs-fadd");
 const rsMult = document.querySelector("#rs-fmult");
 const adder = document.querySelector("#adder");
+const pc = document.querySelector("#pc");
+const clock = document.querySelector("#clock");
 
 const activeList = new Set();
 
@@ -176,8 +178,13 @@ export function updateMemory(address, value) {
 }
 
 
-export function issue(station) {
-    updateStation(station);
+export function issue(station, _pc, _clock) {
+    pc.innerText = _pc.toString().padStart(2, "0");
+    clock.innerText = _clock.toString().padStart(2, "0");
+
+    if (station) {
+        updateStation(station);
+    }
 }
 
 export function execute(adder, station) {

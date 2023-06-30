@@ -11,6 +11,7 @@ const registers = new Float64Array(32); // 16 registers, each one 64-bit float
 const regStats = new Uint8Array(32); // 16 registers, each one 8-bit unsigned integer
 
 let pc = 0; // program counter
+let clock = 0; // clock cycles
 
 let ui = {
     issue: () => { },
@@ -18,7 +19,7 @@ let ui = {
     writeBack: () => { },
 }
 
-issue.init(instructions, operations, stations, regStats, registers, pc);
+issue.init(instructions, operations, stations, regStats, registers, pc, clock);
 execute.init(adder, stations, registers, memView, cdb);
 writeBack.init(stations, registers, regStats, cdb);
 

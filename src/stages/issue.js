@@ -1,14 +1,15 @@
 import { TYPES } from "../components";
 
-let instructions, operations, stations, regStats, registers, pc;
+let instructions, operations, stations, regStats, registers, pc, clock;
 
-function init(_instructions, _operations, _stations, _regStats, _registers, _pc) {
+function init(_instructions, _operations, _stations, _regStats, _registers, _pc, _clock) {
     instructions = _instructions;
     operations = _operations;
     stations = _stations;
     regStats = _regStats;
     registers = _registers;
     pc = _pc;
+    clock = _clock;
 }
 
 let instruction, opcode, funct, operation, station, params;
@@ -34,6 +35,9 @@ function read() {
 }
 
 function write(uiCall) {
+    clock += 1;
+    uiCall(station, pc, clock);
+
     if (!operation) {
         return;
     }
@@ -53,7 +57,7 @@ function write(uiCall) {
 
     
     pc += 4;
-    uiCall(station);
+    uiCall(station, pc, clock);
 }
 
 function writeR() {
