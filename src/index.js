@@ -51,9 +51,10 @@ fileInput.onchange = () => { // read file and put it in the text input
 }
 
 saveButton.onclick = () => { // save code from text input
-    code = textInput.innerHTML.toString().trim();
-    if (/\w/.test(code)) { // if code is not binary
-        code = code.split("\n").map(e => assemblyToBin(e)) // remove spaces
+    console.log(textInput.value);
+    code = textInput.value.toString().trim();
+    if (/[a-z]/.test(code)) { // if code is not binary
+        code = code.split("\n").map(e => assemblyToBin(e))
     } else {
         code = code.split("\n");
     }
@@ -64,7 +65,7 @@ saveButton.onclick = () => { // save code from text input
 
 upModal.addEventListener("show.bs.modal", () => { // clear input when modal is opened
     fileInput.value = "";
-    textInput.innerHTML = code;
+    textInput.value = typeof code === "string" ? code : code.join("\n");
 })
 
 // handle output
