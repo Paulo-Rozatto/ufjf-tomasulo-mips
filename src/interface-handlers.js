@@ -60,7 +60,7 @@ export function init() {
 
     const zero32 = "0".repeat(32);
     const address = (i) => "0x" + i.toString(16).padStart(2, "0");
-    const reg  = (i) => "$" + i.toString(10).padStart(2, "0");
+    const reg = (i) => "$" + i.toString(10).padStart(2, "0");
 
     for (let i = 0; i < 64; i++) {
         const li = newDoubleCell(`mem-${i}`, address(i), zero32);
@@ -123,7 +123,6 @@ export function setInstructions(commands) {
         fragment.appendChild(li);
     }
     instructions.appendChild(fragment);
-    setActive(instructions.firstChild);
 }
 
 function updateLoadBuffer(station) {
@@ -182,8 +181,12 @@ export function updateMemory(address, value) {
 
 
 export function issue(station, _pc, _clock) {
-    pc.innerText = _pc.get().toString().padStart(2, "0");
     clock.innerText = _clock.get().toString().padStart(2, "0");
+    if (_pc) {
+        pc.innerText = _pc.get().toString().padStart(2, "0");
+        let insIdx = (_pc.get() >> 2) - 1;
+        setActive(instructions.children[insIdx])
+    }
 
     if (station) {
         updateStation(station);

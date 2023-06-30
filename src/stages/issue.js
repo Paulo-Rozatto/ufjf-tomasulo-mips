@@ -36,7 +36,7 @@ function read() {
 
 function write(uiCall) {
     clock.next();
-    uiCall(null, pc, clock);
+    uiCall(null, null, clock);
 
     if (!operation) {
         return;
