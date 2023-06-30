@@ -28,16 +28,17 @@ function write(uiCall) {
         })
 
         const allStations = Object.values(stations).flatMap(e => e);
-        allStations.forEach(station => {
-            if (station.qj == station.id) {
-                station.qj = 0;
-                station.vj = result;
-                uiStations.add(station);
+        allStations.forEach(rs => {
+            if (rs.qj == station.id) {
+                console.log(1)
+                rs.qj = 0;
+                rs.vj = result;
+                uiStations.add(rs);
             }
-            if (station.qk == station.id) {
-                station.qk = 0;
-                station.vk = result;
-                uiStations.add(station);
+            if (rs.qk == station.id) {
+                rs.qk = 0;
+                rs.vk = result;
+                uiStations.add(rs);
             }
         });
 

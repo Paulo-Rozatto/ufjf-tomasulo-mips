@@ -59,7 +59,7 @@ export const operations = {
     },
     0b0000010: { // i type
         name: 'fld',
-        op: (rs1, imm, reg, mem) => mem[(reg[rs1] + imm) >> 2],
+        op: (rs1, imm, reg, mem) => mem[(reg[rs1] + imm) >> 3],
         cicles: 1,
         station: FLD_RS,
         getParams: (instruction) => {

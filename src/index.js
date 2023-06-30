@@ -22,7 +22,7 @@ const foward = document.querySelector("#foward");
 
 // conde entry
 let code = "fadd $3, $1, $5\n";
-code = "fld $1, 2($3)";
+code =  "fld $1, 16($12)\n" + code;
 
 // cpu setup
 cpu.setUICallbacks({ issue, execute, writeBack });

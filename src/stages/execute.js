@@ -10,7 +10,7 @@ function init(_adder, _stations, _registers, _memory, _cdb) {
     cdb = _cdb;
 }
 
-let updateUi = false, adderStation, fldStation;
+let adderStation, fldStation;
 function read() {
     adderStation = stations[ADD_RS].find(station => station.busy && station.qj == 0 && station.qk == 0);
     fldStation = stations[FLD_RS].find(station => station.busy && station.qj == 0);
