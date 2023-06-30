@@ -7,11 +7,12 @@ function init(_stations, _registers, _regStats, _cdb) {
     cdb = _cdb;
 }
 
-let station, result, busy;
+let station, result, busy, stats;
 function read() {
     busy = cdb.busy;
     result = cdb.result;
     station = { ...cdb.station }; // copy object
+    stats = [...regStats];
 }
 
 function write(uiCall) {
@@ -19,7 +20,7 @@ function write(uiCall) {
     const uiRegisters = new Set();
 
     if (busy) {
-        regStats.forEach((stat, i) => {
+        stats.forEach((stat, i) => {
             if (stat == station.id) {
                 registers[i] = result;
                 regStats[i] = 0;
@@ -30,7 +31,6 @@ function write(uiCall) {
         const allStations = Object.values(stations).flatMap(e => e);
         allStations.forEach(rs => {
             if (rs.qj == station.id) {
-                console.log(1)
                 rs.qj = 0;
                 rs.vj = result;
                 uiStations.add(rs);
@@ -45,7 +45,7 @@ function write(uiCall) {
         cdb.result = 0;
         cdb.station = null;
         cdb.busy = false;
-        uiStations.add(station);
+        // uiStations.add(station);
     }
 
     uiCall(uiStations, uiRegisters);

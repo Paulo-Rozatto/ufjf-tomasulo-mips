@@ -35,6 +35,9 @@ function read() {
 
 function write(uiCall) {
     if (!operation) {
+        return;
+    }
+    if (!station) {
         console.warn('stall')
         return;
     }
@@ -48,6 +51,7 @@ function write(uiCall) {
             break;
     }
 
+    
     pc += 4;
     uiCall(station);
 }
