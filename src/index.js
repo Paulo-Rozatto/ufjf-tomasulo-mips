@@ -1,5 +1,5 @@
 import { setInstructions, issue, execute, writeBack, clearActive, init } from "./interface-handlers.js";
-import { assemblyToBin, binToAssembly } from "./translator.js";
+import { assemblyToBin } from "./translator.js";
 import * as cpu from "./cpu.js";
 
 const menu = document.querySelector(".menu");
@@ -8,6 +8,7 @@ const menuBtn = document.querySelector(".menu-button")
 const textInput = document.querySelector("#codeTextInput");
 const fileInput = document.querySelector("#codeFileInput");
 const textOutput = document.querySelector("#codeTextOutput");
+const sideOutput = document.querySelector("#output");
 
 const upModal = document.querySelector("#uploadModal");
 const saveButton = document.querySelector("#saveButton");
@@ -20,7 +21,7 @@ const run = document.querySelector("#run");
 const pause = document.querySelector("#pause");
 const foward = document.querySelector("#foward");
 
-const INTERVAL_TIME = 1000; // ms
+const INTERVAL_TIME = 1500; // ms
 let interval;
 
 let code = `fld $1, 16($12)
@@ -31,7 +32,6 @@ fadd $2, $1, $5
 fsub $3, $2, $5
 fadd $4, $3, $5
 fadd $5, $4, $5`;
-// code = "fdiv $6, $1, $5";
 
 // cpu setup
 cpu.setUICallbacks({ issue, execute, writeBack });
@@ -96,10 +96,10 @@ upModal.addEventListener("show.bs.modal", () => { // clear input when modal is o
 })
 
 // handle output
-downModal.addEventListener("show.bs.modal", () => textOutput.innerHTML = code) // put code in output when modal is opened
+downModal.addEventListener("show.bs.modal", () => textOutput.value = sideOutput.value) // put code in output when modal is opened
 
 downloadButton.onclick = (event) => {
-    let blob = new Blob([code], { type: 'text/plain' });
+    let blob = new Blob([textOutput.value], { type: 'text/plain' });
     event.target.download = "resultado.txt";
     event.target.href = window.URL.createObjectURL(blob);
 }

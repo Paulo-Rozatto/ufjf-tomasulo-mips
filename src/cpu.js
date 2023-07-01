@@ -2,7 +2,7 @@ import { instructions, operations, stations, adder, multiplier, loadStoreQueue, 
 import { issue } from './stages/issue.js'
 import { execute } from './stages/execute.js';
 import { writeBack } from './stages/writeback.js';
-import { init, updateMemory, updateRegisters } from './interface-handlers.js';
+import { updateMemory, updateOutput, updateRegisters } from './interface-handlers.js';
 
 const memory = new ArrayBuffer(512); // memory size in bytes
 const memView = new Float64Array(memory); // view memory as 64-bit floats as we are working only with doubles
@@ -33,6 +33,9 @@ export function setUICallbacks(callbacks) {
 }
 
 export function step() {
+    let outPC = pc.get();
+    let outClock = clock.get();
+
     issue.read();
     execute.read();
     writeBack.read();
@@ -40,6 +43,8 @@ export function step() {
     issue.write(ui.issue);
     execute.write(ui.execute);
     writeBack.write(ui.writeBack);
+
+    updateOutput(outPC, outClock, instructions.get(outPC), registers, memView);
 }
 
 export function reset() {

@@ -10,6 +10,7 @@ const rsMult = document.querySelector("#rs-fmult");
 const adder = document.querySelector("#adder");
 const pc = document.querySelector("#pc");
 const clock = document.querySelector("#clock");
+const output = document.querySelector("#output");
 
 const activeList = new Set();
 
@@ -234,6 +235,27 @@ export function execute(adder, multiplier, station) {
 export function writeBack(stations, registers) {
     stations.forEach(station => updateStation(station));
     updateRegisters(registers);
+}
+
+export function updateOutput(pc, clock, instruction, registers, memory) {
+    const ins = instruction ? instruction.toString(2).padStart(32, "0") : "-";
+    const binary = instruction ? binToAssembly(ins) : "-";
+    const outText = `___________________________
+
+Ciclo: ${clock.toString().padStart(2, "0")}
+PC: ${pc.toString().padStart(2, "0")}
+Instrução: ${ins}
+Assembly: ${binary}
+Registradores: 
+${[...registers].map((r, i) => `- $${i.toString().padStart(2, "0")}: ${r.toFixed(2)}`).join("\n")}
+Memória:
+${[...memory].map((m, i) => `- 0x${(i * 8).toString(16).padStart(3, "0")}: ${m.toFixed(2)}`).join("\n")}
+
+`
+    let scrollHeight = output.scrollHeight;
+    output.value += outText;
+    if (clock > 0)
+        output.scrollTo({ top: scrollHeight, behavior: "smooth" })
 }
 
 init();
