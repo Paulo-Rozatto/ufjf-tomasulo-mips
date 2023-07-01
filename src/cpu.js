@@ -1,4 +1,4 @@
-import { instructions, operations, stations, adder, cdb, pc, clock } from './components.js'
+import { instructions, operations, stations, adder, loadStoreQueue, cdb, pc, clock, resetStations } from './components.js'
 import { issue } from './stages/issue.js'
 import { execute } from './stages/execute.js';
 import { writeBack } from './stages/writeback.js';
@@ -18,9 +18,9 @@ let ui = {
     writeBack: () => { },
 }
 
-issue.init(instructions, operations, stations, regStats, registers, pc, clock);
-execute.init(adder, stations, registers, memView, cdb);
-writeBack.init(stations, registers, regStats, cdb);
+issue.init(instructions, operations, stations, regStats, registers, loadStoreQueue, pc, clock);
+execute.init(adder, stations, registers, loadStoreQueue, memView, cdb);
+writeBack.init(stations, registers, regStats, memView, loadStoreQueue, cdb);
 
 export function setInstructions(_commands) {
     commands = _commands;
@@ -46,6 +46,7 @@ export function reset() {
     pc.reset();
     clock.reset();
     setInstructions(commands);
+    loadStoreQueue.reset();
 
     memView[2] = 2.5;
     updateMemory(2, 2.5);
@@ -53,6 +54,8 @@ export function reset() {
     registers[1] = 1.1;
     registers[5] = 5;
     updateRegisters([{ id: 1, value: 1.1 }, { id: 5, value: 5 }]);
+
+    resetStations();
 }
 
 memView[2] = 2.5;

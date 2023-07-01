@@ -1,5 +1,5 @@
 import { setInstructions, issue, execute, writeBack, clearActive, init } from "./interface-handlers.js";
-import { assemblyToBin } from "./translator.js";
+import { assemblyToBin, binToAssembly } from "./translator.js";
 import * as cpu from "./cpu.js";
 
 const menu = document.querySelector(".menu");
@@ -24,6 +24,7 @@ const INTERVAL_TIME = 1000; // ms
 let interval;
 
 let code = `fld $1, 16($12)
+fsd $1, 8($0)
 fadd $2, $1, $5
 fadd $3, $2, $5
 fadd $4, $3, $5
@@ -75,7 +76,6 @@ fileInput.onchange = () => { // read file and put it in the text input
 }
 
 saveButton.onclick = () => { // save code from text input
-    console.log(textInput.value);
     code = textInput.value.toString().trim();
     if (/[a-z]/.test(code)) { // if code is not binary
         code = code.split("\n").map(e => assemblyToBin(e))

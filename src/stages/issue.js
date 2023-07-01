@@ -1,13 +1,14 @@
 import { TYPES } from "../components";
 
-let instructions, operations, stations, regStats, registers, pc, clock;
+let instructions, operations, stations, regStats, registers, pc, clock, loadStoreQueue;
 
-function init(_instructions, _operations, _stations, _regStats, _registers, _pc, _clock) {
+function init(_instructions, _operations, _stations, _regStats, _registers, _loadStoreQueue, _pc, _clock) {
     instructions = _instructions;
     operations = _operations;
     stations = _stations;
     regStats = _regStats;
     registers = _registers;
+    loadStoreQueue = _loadStoreQueue;
     pc = _pc;
     clock = _clock;
 }
@@ -46,15 +47,11 @@ function write(uiCall) {
         return;
     }
 
-    switch (opcode) {
-        case 0b0000001: // r type
-            writeR();
-            break;
-        case 0b0000010: // i type
-            writeI();
-            break;
+    if (opcode == TYPES.R) {
+        writeR();
+    } else {
+        writeIS();
     }
-
 
     pc.next();
     uiCall(station, pc, clock);
@@ -88,27 +85,36 @@ function writeR() {
     regStats[rd] = station.id;
 }
 
-function writeI() {
+function writeIS() {
     if (!station) {
         console.warn('stall')
         return;
     }
 
-    const { rs1, rd, imm } = params;
+    const { rs1, rs2, rd, imm } = params;
+    let rs, r;
 
-    if (regStats[rs1] != 0) {
-        station.qj = regStats[rs1];
+    if (opcode == TYPES.I) {
+        rs = rs1;
+        r = rd;
     } else {
-        station.vj = registers[rs1]
+        rs = rs2;
+        r = rs1;
+    }
+
+    if (regStats[rs] != 0) {
+        station.qj = regStats[rs];
+    } else {
+        station.vj = registers[rs]
         station.qj = 0;
     }
-    regStats[rd] = station.id;
+    regStats[r] = station.id;
     station.busy = true;
     station.op = operation.op;
     station.opName = operation.name;
     station.cicles = operation.cicles;
     station.vk = imm;
-
+    loadStoreQueue.push(station);
 }
 
 export const issue = {

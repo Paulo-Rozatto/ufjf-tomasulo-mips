@@ -98,13 +98,13 @@ export function init() {
     }
 }
 
-function setActive(li) {
+function setActive(li, offset = -1) {
     li.classList.add("active");
-    let offset = li.id.split("-")[1];
-    if (offset) {
+    if (offset < 0) {
+        offset = li.id.split("-")[1]
         offset = parseInt(offset) - 1;
-        li.parentElement.scrollTo({ top: li.clientHeight * offset, behavior: "smooth" })
-    }
+    };
+    li.parentElement.scrollTo({ top: li.clientHeight * offset, behavior: "smooth" })
     activeList.add(li);
 }
 
@@ -132,9 +132,21 @@ function updateLoadBuffer(station) {
     setActive(li);
 }
 
+function updateStoreBuffer(station) {
+    const id = `fsd-${station.id}`;
+    const li = document.getElementById(id);
+    li.children[1].innerText = station.vj.toString(2).padStart(32, "0");
+    setActive(li, station.id - 10);
+}
+
 function updateStation(station) {
     if (station.opName === 'fld') {
         updateLoadBuffer(station);
+        return;
+    }
+
+    if (station.opName === 'fsd') {
+        updateStoreBuffer(station);
         return;
     }
 
