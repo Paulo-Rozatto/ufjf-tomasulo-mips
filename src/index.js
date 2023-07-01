@@ -26,7 +26,7 @@ let interval;
 let code = `fld $1, 16($12)
 fsd $1, 8($0)
 fadd $2, $1, $5
-fadd $3, $2, $5
+fsub $3, $2, $5
 fadd $4, $3, $5
 fadd $5, $4, $5`;
 
