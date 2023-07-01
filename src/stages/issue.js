@@ -18,7 +18,7 @@ let instruction, opcode, funct, operation, station, params;
 function read() {
     instruction = instructions.get(pc.get());
     opcode = instruction & 0b1111111; // [6-0]
-    funct = (instruction >> 12) & 0b11 // [14-12]
+    funct = (instruction >> 12) & 0b111 // [14-12]
 
     operation = operations[opcode];
 

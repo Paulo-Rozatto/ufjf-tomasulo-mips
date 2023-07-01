@@ -8,7 +8,7 @@ function regToBin(register, size = 5) {
 export function binToAssembly(instruction) {
     instruction = parseInt(instruction, 2);
     const opcode = instruction & 0b1111111; // [6-0]
-    const funct = (instruction >> 12) & 0b11 // [14-12]
+    const funct = (instruction >> 12) & 0b111 // [14-12]
 
     if (opcode === 0) {
         return "nop";
@@ -61,6 +61,13 @@ export function assemblyToBin(assembly) {
         case 'fmul':
             opcode = TYPES.R.toString(2).padStart(7,"0");
             funct = "011";
+            rd = binParts[0];
+            rs1 = binParts[1];
+            rs2 = binParts[2];
+            return `0000000${rs2}${rs1}${funct}${rd}${opcode}`;
+        case 'fdiv':
+            opcode = TYPES.R.toString(2).padStart(7,"0");
+            funct = "100";
             rd = binParts[0];
             rs1 = binParts[1];
             rs2 = binParts[2];
