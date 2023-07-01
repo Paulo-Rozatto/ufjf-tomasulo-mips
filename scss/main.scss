@@ -85,3 +85,10 @@ main {
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+
+  #output {
+    height: 300px;
+    resize: none;
+    background-color: black;
+    color: whitesmoke;
+  }
