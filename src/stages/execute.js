@@ -1,9 +1,10 @@
-import { ADD_RS, FLD_RS } from "../components";
+import { ADD_RS, MUL_RS } from "../components";
 
-let adder, stations, registers, memory, cdb, loadStoreQueue;
+let adder, multiplier, stations, registers, memory, cdb, loadStoreQueue;
 
-function init(_adder, _stations, _registers, _loadStoreQueue, _memory, _cdb) {
+function init(_adder, _multiplier, _stations, _registers, _loadStoreQueue, _memory, _cdb) {
     adder = _adder;
+    multiplier = _multiplier;
     stations = _stations;
     registers = _registers;
     loadStoreQueue = _loadStoreQueue;
@@ -11,16 +12,18 @@ function init(_adder, _stations, _registers, _loadStoreQueue, _memory, _cdb) {
     cdb = _cdb;
 }
 
-let adderStation, buffer;
+let adderStation, multiplierStation, buffer;
 function read() {
     adderStation = stations[ADD_RS].find(station => station.busy && station.qj == 0 && station.qk == 0);
+    multiplierStation = stations[MUL_RS].find(station => station.busy && station.qj == 0 && station.qk == 0);
     const head = loadStoreQueue.head();
     buffer = head.busy && head.qj == 0 && head.qk == 0 ? head : null;
 }
 
-let adderUi, stationUi; // referefences to adder and station if they are to be updated in the ui
+let adderUi, multiplierUi, stationUi; // referefences to adder and station if they are to be updated in the ui
 function write(uiCall) {
     adderUi = null;
+    multiplierUi = null;
     stationUi = null;
 
     if (adder.busy) {
@@ -49,6 +52,32 @@ function write(uiCall) {
         adderUi = adder;
     }
 
+    if (multiplier.busy) {
+        if (!multiplier.ready) {
+            multiplier.station.cicles--;
+            multiplierUi = multiplier;
+
+            if (multiplier.station.cicles == 0) {
+                multiplier.ready = true;
+                multiplier.result = multiplier.station.op(multiplier.station.vj, multiplier.station.vk);
+            }
+        }
+
+        if (multiplier.ready && cdb.busy == false) {
+            cdb.busy = true;
+            cdb.result = multiplier.result;
+            cdb.station = multiplier.station;
+            multiplier.busy = false;
+            multiplier.ready = false;
+            multiplier.station.busy = false;
+        }
+    } else if (multiplierStation) {
+        multiplier.busy = true;
+        multiplier.ready = false;
+        multiplier.station = multiplierStation;
+        multiplierUi = multiplier;
+    }
+
     if (buffer) {
         if (!buffer.ready) {
             buffer.cicles--;
@@ -73,7 +102,7 @@ function write(uiCall) {
         }
     }
 
-    uiCall(adderUi, stationUi);
+    uiCall(adderUi, multiplierUi, stationUi);
 }
 
 export const execute = {

@@ -5,9 +5,9 @@ export const TYPES = {
 }
 
 export const ADD_RS = 0b01;
-const MUL_RS = 0b00;
+export const MUL_RS = 0b00;
 export const FLD_RS = 0b10;
-const FSD_RS = 0b11;
+export const FSD_RS = 0b11;
 
 export const cdb = {
     busy: false,
@@ -124,6 +124,7 @@ const station = {
 
 export const stations = {
     [ADD_RS]: [],
+    [MUL_RS]: [],
     [FLD_RS]: [],
     [FSD_RS]: [],
 }
@@ -148,6 +149,13 @@ for (let i = 1; i <= 3; i++) {
     stations[ADD_RS].push(rs);
 }
 
+for (let i = 4; i <= 5; i++) {
+    let rs = { ...station };
+    rs.id = i;
+    rs.opName = "fmul";
+    stations[MUL_RS].push(rs);
+}
+
 for (let i = 6; i <= 9; i++) {
     let rs = { ...station };
     rs.id = i;
@@ -163,6 +171,13 @@ for (let i = 10; i <= 14; i++) {
 }
 
 export const adder = {
+    busy: false,
+    ready: false,
+    station: null,
+    result: 0
+}
+
+export const multiplier = {
     busy: false,
     ready: false,
     station: null,

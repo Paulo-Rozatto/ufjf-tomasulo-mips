@@ -1,4 +1,4 @@
-import { instructions, operations, stations, adder, loadStoreQueue, cdb, pc, clock, resetStations } from './components.js'
+import { instructions, operations, stations, adder, multiplier, loadStoreQueue, cdb, pc, clock, resetStations } from './components.js'
 import { issue } from './stages/issue.js'
 import { execute } from './stages/execute.js';
 import { writeBack } from './stages/writeback.js';
@@ -19,7 +19,7 @@ let ui = {
 }
 
 issue.init(instructions, operations, stations, regStats, registers, loadStoreQueue, pc, clock);
-execute.init(adder, stations, registers, loadStoreQueue, memView, cdb);
+execute.init(adder, multiplier, stations, registers, loadStoreQueue, memView, cdb);
 writeBack.init(stations, registers, regStats, memView, loadStoreQueue, cdb);
 
 export function setInstructions(_commands) {

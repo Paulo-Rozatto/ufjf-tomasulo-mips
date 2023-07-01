@@ -174,6 +174,18 @@ function updateAdder(_adder) {
     setActive(adder);
 }
 
+function updateMultiplier(_multiplier) {
+    if (!_multiplier.station) return;
+
+    const rsId = `rs#${_multiplier.station.id}`;
+    const cycles = _multiplier.station.cicles.toString().padStart(2, "0");
+    multiplier.innerHTML = `
+    <strong title="status">${_multiplier.busy ? "busy" : "free"}</strong>
+    <span title="id da station">${rsId}</span>
+    <span title="Vk">${cycles} cycles</span>`;
+    setActive(multiplier);
+}
+
 export function updateRegisters(registers) {
     registers.forEach(reg => {
         let { id, value } = reg;
@@ -205,9 +217,13 @@ export function issue(station, _pc, _clock) {
     }
 }
 
-export function execute(adder, station) {
+export function execute(adder, multiplier, station) {
     if (adder) {
         updateAdder(adder);
+    }
+
+    if (multiplier) {
+        updateMultiplier(multiplier);
     }
 
     if (station) {

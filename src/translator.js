@@ -58,7 +58,13 @@ export function assemblyToBin(assembly) {
             rs1 = binParts[1];
             rs2 = binParts[2];
             return `0000000${rs2}${rs1}${funct}${rd}${opcode}`;
-            
+        case 'fmul':
+            opcode = TYPES.R.toString(2).padStart(7,"0");
+            funct = "011";
+            rd = binParts[0];
+            rs1 = binParts[1];
+            rs2 = binParts[2];
+            return `0000000${rs2}${rs1}${funct}${rd}${opcode}`;
         case 'fld':
             opcode = TYPES.I.toString(2).padStart(7,"0");
             rs1 = binParts[2];
