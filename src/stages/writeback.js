@@ -54,7 +54,7 @@ function write(uiCall) {
     }
 
     if (head && head.ready && head.opName === 'fsd') {
-        const address = head.vk;
+        const address = head.vk >> 3; // memview has 8 bytes per line
         memory[address] = head.vj;
         head.busy = false;
         head.ready = false;

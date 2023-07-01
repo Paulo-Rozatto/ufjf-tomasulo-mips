@@ -98,7 +98,7 @@ export const operations = {
     },
     0b0000011: { // s type
         name: 'fsd',
-        op: (rs1, rs2, imm, reg, mem) => (reg[rs1] + imm) >> 3,
+        op: (rs1, imm, reg) => (reg[rs1] + imm),
         cicles: 1,
         station: FSD_RS,
         getParams: (instruction) => {

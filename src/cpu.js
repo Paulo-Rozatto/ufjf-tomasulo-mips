@@ -44,7 +44,7 @@ export function step() {
     execute.write(ui.execute);
     writeBack.write(ui.writeBack);
 
-    updateOutput(outPC, outClock, instructions.get(outPC), registers, memView);
+    updateOutput(outPC, outClock, instructions.get(outPC), stations, registers, memView);
 }
 
 export function reset() {
@@ -53,19 +53,19 @@ export function reset() {
     setInstructions(commands);
     loadStoreQueue.reset();
 
-    memView[2] = 2.5;
-    updateMemory(2, 2.5);
+    memView[2] = 2;
+    updateMemory(2, 2);
 
     registers[1] = 1.1;
-    registers[5] = 5;
+    registers[5] = 5.5;
     updateRegisters([{ id: 1, value: 1.1 }, { id: 5, value: 5 }]);
 
     resetStations();
 }
 
-memView[2] = 2.5;
-updateMemory(2, 2.5);
+memView[2] = 2;
+updateMemory(2, 2);
 
 registers[1] = 1.1;
-registers[5] = 5;
+registers[5] = 5.5;
 updateRegisters([{ id: 1, value: 1.1 }, { id: 5, value: 5 }]);

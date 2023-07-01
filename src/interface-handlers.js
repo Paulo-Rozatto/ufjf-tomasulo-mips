@@ -1,4 +1,5 @@
 import { binToAssembly } from "./translator";
+import { ADD_RS, MUL_RS } from "./components";
 
 const instructions = document.querySelector("#instructions-list");
 const memory = document.querySelector("#memory-list");
@@ -60,7 +61,7 @@ export function init() {
     clock.innerText = "00";
 
     const zero32 = "0".repeat(32);
-    const address = (i) => "0x" + i.toString(16).padStart(2, "0");
+    const address = (i) => "0x" + (i * 8).toString(16).padStart(3, "0");
     const reg = (i) => "$" + i.toString(10).padStart(2, "0");
 
     for (let i = 0; i < 64; i++) {
@@ -89,7 +90,7 @@ export function init() {
     }
 
     for (let i = 10; i <= 14; i++) {
-        const li = newDoubleCell(`fsd-${i}`, address(i), zero32);
+        const li = newDoubleCell(`fsd-${i}`, address(0), zero32);
         storeBuffer.appendChild(li);
     }
 
@@ -136,7 +137,9 @@ function updateLoadBuffer(station) {
 function updateStoreBuffer(station) {
     const id = `fsd-${station.id}`;
     const li = document.getElementById(id);
+    li.children[0].innerText = "0x" + station.vk.toString(16).padStart(3, "0");
     li.children[1].innerText = station.vj.toString(2).padStart(32, "0");
+    li.children[1].title = station.vj.toFixed(2);
     setActive(li, station.id - 10);
 }
 
@@ -237,15 +240,22 @@ export function writeBack(stations, registers) {
     updateRegisters(registers);
 }
 
-export function updateOutput(pc, clock, instruction, registers, memory) {
+export function updateOutput(pc, clock, instruction, stations, registers, memory) {
     const ins = instruction ? instruction.toString(2).padStart(32, "0") : "-";
     const binary = instruction ? binToAssembly(ins) : "-";
+    const adds = stations[ADD_RS].map(rs => `- ${rs.id.toString().padStart(2, "0")}: ${rs.busy ? rs.opName : "free"}`).join("\n");
+    const mults = stations[MUL_RS].map(rs => `- ${rs.id.toString().padStart(2, "0")}: ${rs.busy ? rs.opName : "free"}`).join("\n");
+
     const outText = `___________________________
 
 Ciclo: ${clock.toString().padStart(2, "0")}
 PC: ${pc.toString().padStart(2, "0")}
 Instrução: ${ins}
 Assembly: ${binary}
+Estações de Adição:
+${adds}
+Estações de Multiplicação:
+${mults}
 Registradores: 
 ${[...registers].map((r, i) => `- $${i.toString().padStart(2, "0")}: ${r.toFixed(2)}`).join("\n")}
 Memória:
